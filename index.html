@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>XO Game + Video Call</title>
+  <title>XO Game + Chat</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
@@ -44,11 +44,6 @@
       width: 80%;
       text-align: left;
     }
-    video {
-      width: 45%;
-      border-radius: 10px;
-      margin: 5px;
-    }
     #winnerOverlay {
       position: fixed;
       top: 0; left: 0;
@@ -65,7 +60,7 @@
   </style>
 </head>
 <body>
-  <h1>XO Game 🎮 + Video Call 📹</h1>
+  <h1>XO Game 🎮 + Chat 💬</h1>
 
   <div>
     Name: <input id="playerName" placeholder="Your name" />
@@ -81,16 +76,7 @@
     <div id="winnerText">🎉 Winner! 🎉</div>
   </div>
 
-  <div>
-    <button onclick="startVideoCall()">📹 Start Video Call</button>
-    <button onclick="endCall()">❌ End Call</button>
-  </div>
-  <div>
-    <video id="localVideo" autoplay muted playsinline></video>
-    <video id="remoteVideo" autoplay playsinline></video>
-  </div>
-
-  <h3>💬 Room Chat</h3>
+  <h3>Room Chat</h3>
   <div id="chatMessages"></div>
   <input type="text" id="chatInput" placeholder="Message..." style="width:60%" />
   <button onclick="sendMessage()">Send</button>
@@ -108,9 +94,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let playerName = "", currentRoom = "", myMark = "", localStream, peerConnection;
+    let playerName = "", currentRoom = "", myMark = "";
     const boardEl = document.getElementById("board");
-    const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     function joinRoom() {
       playerName = document.getElementById("playerName").value.trim();
@@ -134,7 +119,6 @@
         listenToPlayers();
         listenToBoard();
         listenToChat();
-        listenForOffer(); // auto connect
       });
     }
 
@@ -229,82 +213,6 @@
         chatBox.appendChild(div);
         chatBox.scrollTop = chatBox.scrollHeight;
       });
-    }
-
-    async function startVideoCall() {
-      const roomRef = db.ref(`videoRooms/${currentRoom}`);
-      localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      document.getElementById("localVideo").srcObject = localStream;
-
-      peerConnection = new RTCPeerConnection(config);
-      localStream.getTracks().forEach(t => peerConnection.addTrack(t, localStream));
-      peerConnection.ontrack = e => {
-        document.getElementById("remoteVideo").srcObject = e.streams[0];
-      };
-      peerConnection.onicecandidate = e => {
-        if (e.candidate) roomRef.child('candidates').push(JSON.stringify(e.candidate));
-      };
-
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      roomRef.child('offer').set(JSON.stringify(offer));
-
-      roomRef.child('answer').on('value', async snap => {
-        if (snap.exists() && !peerConnection.currentRemoteDescription) {
-          await peerConnection.setRemoteDescription(JSON.parse(snap.val()));
-        }
-      });
-
-      roomRef.child('candidates').on('child_added', async snap => {
-        const data = JSON.parse(snap.val());
-        await peerConnection.addIceCandidate(new RTCIceCandidate(data));
-      });
-    }
-
-    async function listenForOffer() {
-      const roomRef = db.ref(`videoRooms/${currentRoom}`);
-      roomRef.child('offer').on('value', async snap => {
-        if (!snap.exists()) return;
-        const offer = JSON.parse(snap.val());
-
-        if (!peerConnection) {
-          peerConnection = new RTCPeerConnection(config);
-
-          peerConnection.ontrack = e => {
-            document.getElementById("remoteVideo").srcObject = e.streams[0];
-          };
-          peerConnection.onicecandidate = e => {
-            if (e.candidate) roomRef.child('candidates').push(JSON.stringify(e.candidate));
-          };
-
-          localStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-          document.getElementById("localVideo").srcObject = localStream;
-          localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-        }
-
-        await peerConnection.setRemoteDescription(offer);
-        const answer = await peerConnection.createAnswer();
-        await peerConnection.setLocalDescription(answer);
-        roomRef.child('answer').set(JSON.stringify(answer));
-      });
-
-      roomRef.child('candidates').on('child_added', async snap => {
-        const data = JSON.parse(snap.val());
-        if (peerConnection) {
-          try {
-            await peerConnection.addIceCandidate(new RTCIceCandidate(data));
-          } catch (e) { console.log("ICE error", e); }
-        }
-      });
-    }
-
-    async function endCall() {
-      const roomRef = db.ref(`videoRooms/${currentRoom}`);
-      if (peerConnection) peerConnection.close();
-      if (localStream) localStream.getTracks().forEach(t => t.stop());
-      document.getElementById("localVideo").srcObject = null;
-      document.getElementById("remoteVideo").srcObject = null;
-      roomRef.remove();
     }
   </script>
 </body>
