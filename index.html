@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>XO Talkplay</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f5f5f5;
+    }
+    #game {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      margin: 30px auto;
+      width: 320px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      cursor: pointer;
+      border: 1px solid #ccc;
+    }
+    #status {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .voice-buttons {
+      text-align: center;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h2 align="center">XO Talkplay 🎮🎙️</h2>
+
+  <div id="game"></div>
+  <div id="status">Connecting...</div>
+
+  <div class="voice-buttons">
+    <button onclick="startCall()">🎤 Start Voice</button>
+    <button onclick="endCall()">❌ End</button>
+    <audio id="remoteAudio" autoplay></audio>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+      projectId: "YOUR_PROJECT",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "XXXX",
+      appId: "1:XXXX:web:XXXX"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    const roomId = "xo-demo-room";
+    const db = firebase.database().ref("rooms/" + roomId);
+    const voiceRoomRef = firebase.database().ref("voiceRooms/" + roomId);
+    const game = document.getElementById("game");
+    const status = document.getElementById("status");
+
+    let symbol = "X";
+    let board = Array(9).fill("");
+    let peerConnection, localStream;
+
+    const servers = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement("div");
+      cell.className = "cell";
+      cell.dataset.index = i;
+      cell.onclick = () => makeMove(i);
+      game.appendChild(cell);
+    }
+
+    function renderBoard() {
+      document.querySelectorAll(".cell").forEach((cell, i) => {
+        cell.textContent = board[i];
+      });
+    }
+
+    function makeMove(index) {
+      if (board[index] === "") {
+        board[index] = symbol;
+        db.set({ board, turn: symbol === "X" ? "O" : "X" });
+      }
+    }
+
+    db.on("value", snap => {
+      const data = snap.val();
+      if (!data) return;
+      board = data.board;
+      renderBoard();
+      status.textContent = `Your turn: ${data.turn === symbol}`;
+    });
+
+    function joinRoom() {
+      db.once("value").then(snap => {
+        symbol = snap.exists() ? "O" : "X";
+        if (!snap.exists()) {
+          db.set({ board, turn: "X" });
+        }
+        renderBoard();
+        listenForOffer();
+      });
+    }
+
+    // WebRTC Voice Chat Logic
+    async function startCall() {
+      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      peerConnection = new RTCPeerConnection(servers);
+
+      localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream);
+      });
+
+      peerConnection.ontrack = e => {
+        document.getElementById("remoteAudio").srcObject = e.streams[0];
+      };
+
+      peerConnection.onicecandidate = event => {
+        if (event.candidate) {
+          voiceRoomRef.child("candidates").push(JSON.stringify(event.candidate));
+        }
+      };
+
+      const offer = await peerConnection.createOffer();
+      await peerConnection.setLocalDescription(offer);
+      await voiceRoomRef.child("offer").set(JSON.stringify(offer));
+
+      voiceRoomRef.child("answer").on("value", async snap => {
+        if (snap.exists()) {
+          const answer = JSON.parse(snap.val());
+          await peerConnection.setRemoteDescription(answer);
+        }
+      });
+
+      voiceRoomRef.child("candidates").on("child_added", async snap => {
+        const candidate = new RTCIceCandidate(JSON.parse(snap.val()));
+        await peerConnection.addIceCandidate(candidate);
+      });
+    }
+
+    async function listenForOffer() {
+      voiceRoomRef.child("offer").on("value", async snap => {
+        if (snap.exists()) {
+          localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          peerConnection = new RTCPeerConnection(servers);
+          localStream.getTracks().forEach(track => {
+            peerConnection.addTrack(track, localStream);
+          });
+
+          peerConnection.ontrack = e => {
+            document.getElementById("remoteAudio").srcObject = e.streams[0];
+          };
+
+          peerConnection.onicecandidate = event => {
+            if (event.candidate) {
+              voiceRoomRef.child("candidates").push(JSON.stringify(event.candidate));
+            }
+          };
+
+          const offer = JSON.parse(snap.val());
+          await peerConnection.setRemoteDescription(offer);
+
+          const answer = await peerConnection.createAnswer();
+          await peerConnection.setLocalDescription(answer);
+          await voiceRoomRef.child("answer").set(JSON.stringify(answer));
+        }
+      });
+
+      voiceRoomRef.child("candidates").on("child_added", async snap => {
+        const candidate = new RTCIceCandidate(JSON.parse(snap.val()));
+        await peerConnection.addIceCandidate(candidate);
+      });
+    }
+
+    async function endCall() {
+      if (peerConnection) peerConnection.close();
+      if (localStream) localStream.getTracks().forEach(t => t.stop());
+      await voiceRoomRef.remove();
+    }
+
+    joinRoom();
+  </script>
+</body>
+</html>
