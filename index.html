@@ -54,11 +54,23 @@
       color: white;
       font-size: 28px;
       z-index: 9999;
+      text-align: center;
     }
     #producer {
-      margin-top: 10px;
-      font-size: 20px;
-      color: #ffcc00;
+      margin-top: 20px;
+      font-size: 22px;
+      color: #ffd700;
+      font-weight: bold;
+      text-shadow: 0 0 10px #ff0, 0 0 20px #ff0, 0 0 30px #ffa500;
+      animation: glow 1.5s ease-in-out infinite alternate;
+    }
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #ffd700, 0 0 20px #ffa500;
+      }
+      to {
+        text-shadow: 0 0 10px #fff, 0 0 20px #ff0, 0 0 40px #ff8c00;
+      }
     }
   </style>
 </head>
@@ -210,9 +222,6 @@
       winnerName.innerText = winner === "Draw" ? "🤝 Draw!" : `${winner} Wins 🎉`;
       winnerOverlay.style.display = "flex";
       setTimeout(() => {
-        winnerOverlay.style.display = "none";
-        db.ref(`games/${currentRoom}/board`).remove();
-        db.ref(`games/${currentRoom}/turn`).remove();
         window.location.href = "https://t.me/Scarykkkk";
       }, 3000);
     }
