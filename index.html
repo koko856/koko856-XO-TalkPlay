@@ -108,10 +108,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let playerName = "";
-    let currentRoom = "";
-    let myMark = "";
+    let playerName = "", currentRoom = "", myMark = "", localStream, peerConnection;
     const boardEl = document.getElementById("board");
+    const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     function joinRoom() {
       playerName = document.getElementById("playerName").value.trim();
@@ -135,7 +134,7 @@
         listenToPlayers();
         listenToBoard();
         listenToChat();
-        listenForOffer(); // 👈 auto connect to incoming video
+        listenForOffer(); // auto connect
       });
     }
 
@@ -231,11 +230,6 @@
         chatBox.scrollTop = chatBox.scrollHeight;
       });
     }
-
-    // ============ WebRTC ============
-    let peerConnection;
-    let localStream;
-    const config = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
 
     async function startVideoCall() {
       const roomRef = db.ref(`videoRooms/${currentRoom}`);
