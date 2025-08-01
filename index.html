@@ -2,104 +2,222 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>XO Voice Game by @Scarykkkk</title>
-  <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet">
+  <title>🎮 XO Game - 3 Days Trial with License & Room</title>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
   <style>
     body {
       font-family: 'Kanit', sans-serif;
-      text-align: center;
-      background: linear-gradient(to right, #f2fcfe, #1c92d2);
+      background: linear-gradient(135deg, #667eea, #764ba2);
       margin: 0; padding: 0;
-    }
-    h2 {
-      font-size: 28px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       color: white;
-      margin-top: 20px;
     }
-    input, button {
-      font-size: 16px;
-      padding: 8px 12px;
-      margin: 5px;
-      border-radius: 5px;
+
+    h2 {
+      margin-top: 30px;
+      font-size: 32px;
+      user-select: none;
     }
+
+    #joinForm {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      margin: 30px 0;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 320px;
+      max-width: 90vw;
+    }
+
+    #joinForm input {
+      padding: 12px 20px;
+      margin: 10px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 18px;
+      width: 100%;
+      outline: none;
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      box-sizing: border-box;
+      transition: box-shadow 0.3s ease;
+    }
+
+    #joinForm input:focus {
+      box-shadow: 0 0 8px 3px #00c6ff;
+    }
+
+    #joinForm button {
+      padding: 12px 30px;
+      margin-top: 15px;
+      font-size: 18px;
+      font-weight: bold;
+      background: linear-gradient(to right, #0072ff, #00c6ff);
+      color: white;
+      border: none;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      width: 100%;
+    }
+
+    #joinForm button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 12px rgba(0,198,255,0.7);
+    }
+
+    #playersDisplay {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      user-select: none;
+    }
+
     table {
-      margin: auto;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-bottom: 15px;
     }
     td {
-      width: 80px; height: 80px;
+      width: 80px;
+      height: 80px;
       font-size: 36px;
       border: 2px solid #333;
       background: white;
+      color: black;
       cursor: pointer;
+      user-select: none;
+      text-align: center;
+      vertical-align: middle;
+      transition: background 0.3s ease;
+      border-radius: 8px;
     }
     td.marked {
       background: #d0f0c0;
+      color: #004d00;
+      font-weight: bold;
     }
+
+    #timer {
+      font-size: 14px;
+      color: yellow;
+      font-weight: normal;
+      margin-bottom: 15px;
+      user-select: none;
+    }
+
     #status {
-      font-size: 20px;
-      margin-top: 10px;
-      color: white;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      user-select: none;
     }
-    #winnerOverlay {
+
+    #overlay {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(0,0,0,0.85);
+      color: white;
       display: none;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
-      color: white;
-      font-size: 28px;
       z-index: 9999;
-      text-align: center;
     }
-    #producer {
-      margin-top: 20px;
-      font-size: 22px;
-      color: #ffd700;
+    #overlay input, #overlay button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 18px;
+      border-radius: 5px;
+      border: none;
+      width: 280px;
+      max-width: 90vw;
+    }
+    #overlay button {
+      background: #00c6ff;
       font-weight: bold;
-      text-shadow: 0 0 10px #ff0, 0 0 20px #ff0, 0 0 30px #ffa500;
-      animation: glow 1.5s ease-in-out infinite alternate;
+      color: black;
+      cursor: pointer;
+      transition: background 0.3s ease;
     }
-    @keyframes glow {
-      from {
-        text-shadow: 0 0 5px #fff, 0 0 10px #ffd700, 0 0 20px #ffa500;
+    #overlay button:hover {
+      background: #0072ff;
+      color: white;
+    }
+    #licenseBox {
+      margin-top: 10px;
+      font-size: 16px;
+      color: red;
+      user-select: none;
+    }
+
+    #developerCredit {
+      background: gold;
+      color: black;
+      font-weight: bold;
+      font-size: 18px;
+      width: 100%;
+      text-align: center;
+      padding: 15px 0;
+      user-select: none;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 10000;
+    }
+
+    @media (max-width: 500px) {
+      #joinForm, #overlay input, #overlay button {
+        width: 90%;
       }
-      to {
-        text-shadow: 0 0 10px #fff, 0 0 20px #ff0, 0 0 40px #ff8c00;
+      td {
+        width: 60px;
+        height: 60px;
+        font-size: 28px;
       }
     }
   </style>
 </head>
 <body>
-  <h2>XO Voice Game</h2>
 
-  <div>
-    Name: <input type="text" id="playerName" placeholder="Your name" />
-    Room ID: <input type="text" id="roomId" value="room123" />
-    <button onclick="joinRoom()">Join Room</button>
+  <h2>🎮 XO Game</h2>
+
+  <div id="joinForm">
+    <input id="playerName" type="text" placeholder="👤 Enter your name..." />
+    <input id="roomId" type="text" placeholder="🏠 Enter room ID..." value="room3" />
+    <button onclick="checkAndJoin()">Join Room</button>
   </div>
 
-  <div id="status">Waiting for players...</div>
-  <h3 id="playersDisplay"></h3>
+  <div id="status"></div>
+  <div id="playersDisplay">👥 Player vs Player</div>
+
   <table id="board"></table>
 
-  <div style="margin-top: 20px;">
-    <button onclick="startCall()">🎙 Start Voice</button>
-    <button onclick="endCall()">❌ End</button>
-    <audio id="remoteAudio" autoplay></audio>
+  <div id="timer">Trial Time Left: 3 days</div>
+
+  <!-- License Key Overlay -->
+  <div id="overlay">
+    <div style="margin-bottom: 10px;">⛔ Trial expired. Enter License Key:</div>
+    <input id="licenseInput" placeholder="Enter license key..." />
+    <button onclick="submitLicense()">✅ Activate</button>
+    <div id="licenseBox"></div>
   </div>
 
-  <div id="winnerOverlay">
-    <div id="winnerName">🎉 Winner! 🎉</div>
-    <div id="producer">Produced by @Scarykkkk</div>
+  <div id="developerCredit">
+    👨‍💻 Developed by <a href="https://t.me/Scarykkkk" target="_blank" style="color:black; text-decoration:underline;">@Scarykkkk</a> on Telegram
   </div>
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyClhTG2xUVZSYi7LnXtKVzUh4_G2PK-VYk",
@@ -110,19 +228,36 @@
     const db = firebase.database();
 
     const board = document.getElementById("board");
+    const overlay = document.getElementById("overlay");
+    const licenseInput = document.getElementById("licenseInput");
+    const licenseBox = document.getElementById("licenseBox");
     const statusEl = document.getElementById("status");
-    const winnerOverlay = document.getElementById("winnerOverlay");
-    const winnerName = document.getElementById("winnerName");
     const playersDisplay = document.getElementById("playersDisplay");
+    const joinForm = document.getElementById("joinForm");
+    const timerEl = document.getElementById("timer");
 
-    let playerName = "", currentRoom = "", myMark = "";
-    let peerConnection, localStream;
-    const configuration = { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] };
+    let playerName = "";
+    let currentRoom = "";
+    let myMark = "";
+    let trialSeconds = 3 * 24 * 60 * 60; // 3 days in seconds = 259200
+    let trialInterval = null;
+    let licensed = false;
+    const validKeys = ["ABCD-1234", "VIP-9999"];
 
-    function joinRoom() {
+    function checkAndJoin() {
       playerName = document.getElementById("playerName").value.trim();
       currentRoom = document.getElementById("roomId").value.trim();
-      if (!playerName || !currentRoom) return alert("Fill in both fields");
+      if (!playerName || !currentRoom) {
+        alert("Please enter your name and room ID!");
+        return;
+      }
+
+      joinForm.style.display = "none";
+      statusEl.textContent = "🕒 Connecting to room...";
+
+      trialSeconds = 3 * 24 * 60 * 60;
+      licensed = false;
+      startTrial();
 
       const playersRef = db.ref(`games/${currentRoom}/players`);
       playersRef.once("value").then(snapshot => {
@@ -134,13 +269,15 @@
           playersRef.child("O").set(playerName);
           myMark = "O";
         } else {
-          alert("Room full!");
+          alert("Room is full!");
+          location.reload();
           return;
         }
         setupBoard();
         listenToBoard();
         listenToPlayers();
-        listenForCall();
+        listenToTurn();
+        statusEl.textContent = `Connected! You are '${myMark}' | Room: ${currentRoom}`;
       });
     }
 
@@ -152,25 +289,24 @@
           const cell = row.insertCell();
           cell.dataset.row = r;
           cell.dataset.col = c;
-          cell.innerText = "";
-          cell.className = "";
           cell.onclick = cellClicked;
         }
       }
-      statusEl.innerText = `You are '${myMark}'`;
     }
 
     function cellClicked(e) {
+      if (!licensed && trialSeconds <= 0) return;
       const cell = e.target;
-      const row = cell.dataset.row;
-      const col = cell.dataset.col;
       if (cell.innerText !== "") return;
 
+      const r = cell.dataset.row;
+      const c = cell.dataset.col;
       const turnRef = db.ref(`games/${currentRoom}/turn`);
+
       turnRef.once("value").then(snap => {
         const turn = snap.val() || "X";
         if (turn !== myMark) return;
-        db.ref(`games/${currentRoom}/board/${row}_${col}`).set(myMark);
+        db.ref(`games/${currentRoom}/board/${r}_${c}`).set(myMark);
         turnRef.set(myMark === "X" ? "O" : "X");
       });
     }
@@ -185,117 +321,92 @@
             if (cell.innerText !== val) {
               cell.innerText = val;
               if (val) cell.classList.add("marked");
+              else cell.classList.remove("marked");
             }
           }
         }
-        checkGameEnd(b);
       });
     }
 
     function listenToPlayers() {
       db.ref(`games/${currentRoom}/players`).on("value", snap => {
         const players = snap.val() || {};
-        const other = myMark === "X" ? "O" : "X";
-        playersDisplay.innerText = `${players[myMark] || "You"} (You) vs ${players[other] || "..."}`;
+        const playerX = players.X || "Waiting";
+        const playerO = players.O || "Waiting";
+        playersDisplay.textContent = `${playerO}  vs  ${playerX}`;
       });
     }
 
-    function checkGameEnd(b) {
-      const get = (r,c) => b[`${r}_${c}`] || "";
-      const lines = [
-        [[0,0],[0,1],[0,2]], [[1,0],[1,1],[1,2]], [[2,0],[2,1],[2,2]],
-        [[0,0],[1,0],[2,0]], [[0,1],[1,1],[2,1]], [[0,2],[1,2],[2,2]],
-        [[0,0],[1,1],[2,2]], [[0,2],[1,1],[2,0]]
-      ];
-      for (let line of lines) {
-        const [a,b,c] = line;
-        const v = get(...a);
-        if (v && v === get(...b) && v === get(...c)) {
-          showWinner(v);
-          return;
-        }
-      }
-      if (Object.keys(b).length === 9) showWinner("Draw");
-    }
-
-    function showWinner(winner) {
-      winnerName.innerText = winner === "Draw" ? "🤝 Draw!" : `${winner} Wins 🎉`;
-      winnerOverlay.style.display = "flex";
-      setTimeout(() => {
-        window.location.href = "https://t.me/Scarykkkk";
-      }, 3000);
-    }
-
-    function voiceRoomRef() {
-      return db.ref(`voiceRooms/${currentRoom}`);
-    }
-
-    async function startCall() {
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      peerConnection = new RTCPeerConnection(configuration);
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-      peerConnection.ontrack = e => {
-        document.getElementById("remoteAudio").srcObject = e.streams[0];
-      };
-      peerConnection.onicecandidate = e => {
-        if (e.candidate) voiceRoomRef().child("candidates").push(JSON.stringify(e.candidate));
-      };
-
-      const offer = await peerConnection.createOffer();
-      await peerConnection.setLocalDescription(offer);
-      voiceRoomRef().child("offer").set(JSON.stringify(offer));
-
-      voiceRoomRef().child("answer").on("value", async snap => {
-        if (snap.exists() && !peerConnection.currentRemoteDescription) {
-          await peerConnection.setRemoteDescription(JSON.parse(snap.val()));
+    function listenToTurn() {
+      db.ref(`games/${currentRoom}/turn`).once("value", snap => {
+        if (!snap.exists()) {
+          db.ref(`games/${currentRoom}/turn`).set("X");
         }
       });
-
-      voiceRoomRef().child("candidates").on("child_added", async snap => {
-        const candidate = new RTCIceCandidate(JSON.parse(snap.val()));
-        await peerConnection.addIceCandidate(candidate);
-      });
     }
 
-    async function listenForCall() {
-      localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      peerConnection = new RTCPeerConnection(configuration);
-      localStream.getTracks().forEach(track => peerConnection.addTrack(track, localStream));
-
-      peerConnection.ontrack = e => {
-        document.getElementById("remoteAudio").srcObject = e.streams[0];
-      };
-      peerConnection.onicecandidate = e => {
-        if (e.candidate) voiceRoomRef().child("candidates").push(JSON.stringify(e.candidate));
-      };
-
-      voiceRoomRef().child("offer").on("value", async snap => {
-        if (snap.exists() && !peerConnection.currentRemoteDescription) {
-          const offer = JSON.parse(snap.val());
-          await peerConnection.setRemoteDescription(offer);
-          const answer = await peerConnection.createAnswer();
-          await peerConnection.setLocalDescription(answer);
-          voiceRoomRef().child("answer").set(JSON.stringify(answer));
+    function startTrial() {
+      updateTimerDisplay();
+      trialInterval = setInterval(() => {
+        trialSeconds--;
+        updateTimerDisplay();
+        if (trialSeconds <= 0) {
+          clearInterval(trialInterval);
+          if (!licensed) {
+            overlay.style.display = "flex";
+            disableBoard();
+            statusEl.textContent = `⏰ Trial expired! Please enter license key.`;
+          }
         }
-      });
-
-      voiceRoomRef().child("candidates").on("child_added", async snap => {
-        const candidate = new RTCIceCandidate(JSON.parse(snap.val()));
-        await peerConnection.addIceCandidate(candidate);
-      });
+      }, 1000);
     }
 
-    function endCall() {
-      if (peerConnection) {
-        peerConnection.close();
-        peerConnection = null;
+    function updateTimerDisplay() {
+      if (trialSeconds > 0) {
+        const days = Math.floor(trialSeconds / (24*60*60));
+        const hours = Math.floor((trialSeconds % (24*60*60)) / 3600);
+        const minutes = Math.floor((trialSeconds % 3600) / 60);
+        const seconds = trialSeconds % 60;
+        timerEl.textContent = `Trial Time Left: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+      } else if (licensed) {
+        timerEl.textContent = "✅ Licensed User";
+      } else {
+        timerEl.textContent = "⏰ Trial expired";
       }
-      if (localStream) {
-        localStream.getTracks().forEach(track => track.stop());
+    }
+
+    function disableBoard() {
+      for (let r=0; r<3; r++) {
+        for (let c=0; c<3; c++) {
+          const cell = board.rows[r]?.cells[c];
+          if(cell) cell.onclick = null;
+        }
       }
-      voiceRoomRef().remove();
+    }
+
+    function enableBoard() {
+      for (let r=0; r<3; r++) {
+        for (let c=0; c<3; c++) {
+          const cell = board.rows[r]?.cells[c];
+          if(cell) cell.onclick = cellClicked;
+        }
+      }
+    }
+
+    function submitLicense() {
+      const key = licenseInput.value.trim();
+      if (validKeys.includes(key)) {
+        licensed = true;
+        overlay.style.display = "none";
+        enableBoard();
+        updateTimerDisplay();
+        licenseBox.textContent = "";
+        statusEl.textContent = `✅ Licensed User | Room: ${currentRoom} | You are '${myMark}'`;
+      } else {
+        licenseBox.textContent = "❌ Invalid license key.";
+      }
     }
   </script>
+
 </body>
 </html>
