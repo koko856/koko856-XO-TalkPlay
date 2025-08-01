@@ -179,18 +179,18 @@
 </head>
 <body>
 
-  <h2>🎮 XO Game</h2>
+  <h2>🎮 XO Online Game</h2>
 
   <div id="joinForm">
     <input id="playerName" type="text" placeholder="👤 Enter your name..." />
-    <input id="roomId" type="text" placeholder="🏠 Enter room ID..." value="room3" />
+    <input id="roomId" type="text" placeholder="🏠 Enter room ID..." value="" />
     <button onclick="checkAndJoin()">Join Room</button>
   </div>
 
   <div id="status"></div>
   <div id="playersDisplay">👥 Player vs Player</div>
   <table id="board"></table>
-  <div id="timer">Trial Time Left: 30s</div>
+  <div id="timer">Trial Time Left: 60s</div>
 
   <!-- License Key Overlay -->
   <div id="overlay">
@@ -322,12 +322,12 @@
           break;
         case 'Atom':
           message = `
-            <p><strong>Atom Money</strong> ဖြင့် <strong>09-752458860</strong> ကိုငွေဖြုတ်ပါ။</p>
+            <p><strong>Atom Money</strong> ဖြင့် <strong>09-752458860</strong> ကို 5000 MMK ပေးပို့ပါ။</p>
           `;
           break;
         case 'Mytel':
           message = `
-            <p><strong>Mytel Money</strong> ဖြင့် <strong>09-662594221</strong> ကိုငွေပေးပါ။</p>
+            <p><strong>Mytel Money</strong> ဖြင့် <strong>09-662594221</strong> ကို 5000 MMK ပေးပို့ပါ။</p>
           `;
           break;
       }
@@ -372,7 +372,7 @@
     let playerName = "";
     let currentRoom = "";
     let myMark = "";
-    let trialSeconds = 30;
+    let trialSeconds = 60;
     let trialInterval = null;
     let licensed = false;
     const validKeys = ["ABCD-1234", "VIP-9999"];
@@ -388,7 +388,7 @@
       joinForm.style.display = "none";
       statusEl.textContent = "🕒 Connecting to room...";
 
-      trialSeconds = 30;
+      trialSeconds = 60;
       licensed = false;
       startTrial();
 
