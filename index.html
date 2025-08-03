@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>🎮 XO Game - 30s Trial with License & Payment Info</title>
+  <title>🎮 XO Game - 30s Trial with License & Auto Reset + Confetti</title>
   <link href="https://fonts.googleapis.com/css2?family=Kanit&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -14,14 +14,13 @@
       flex-direction: column;
       align-items: center;
       color: white;
+      overflow-x: hidden;
     }
-
     h2 {
       margin-top: 30px;
       font-size: 32px;
       user-select: none;
     }
-
     #joinForm {
       background: rgba(255, 255, 255, 0.1);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -36,7 +35,6 @@
       width: 320px;
       max-width: 90vw;
     }
-
     #joinForm input, #overlay input {
       padding: 12px 20px;
       margin: 10px 0;
@@ -50,11 +48,9 @@
       box-sizing: border-box;
       transition: box-shadow 0.3s ease;
     }
-
     #joinForm input:focus, #overlay input:focus {
       box-shadow: 0 0 8px 3px #00c6ff;
     }
-
     #joinForm button, #overlay button {
       padding: 12px 30px;
       margin-top: 15px;
@@ -68,24 +64,20 @@
       transition: transform 0.2s ease, box-shadow 0.3s ease;
       width: 100%;
     }
-
     #joinForm button:hover, #overlay button:hover {
       transform: scale(1.05);
       box-shadow: 0 0 12px rgba(0,198,255,0.7);
     }
-
     #playersDisplay {
       font-size: 20px;
       font-weight: bold;
       margin-bottom: 15px;
       user-select: none;
     }
-
     table {
       border-collapse: collapse;
       margin-bottom: 15px;
     }
-
     td {
       width: 80px;
       height: 80px;
@@ -100,13 +92,11 @@
       transition: background 0.3s ease;
       border-radius: 8px;
     }
-
     td.marked {
       background: #d0f0c0;
       color: #004d00;
       font-weight: bold;
     }
-
     #timer {
       font-size: 14px;
       color: yellow;
@@ -114,14 +104,15 @@
       margin-bottom: 15px;
       user-select: none;
     }
-
     #status {
       font-size: 18px;
       font-weight: bold;
       margin-bottom: 15px;
       user-select: none;
+      min-height: 24px;
+      position: relative;
+      z-index: 10;
     }
-
     #overlay {
       position: fixed;
       top: 0; left: 0;
@@ -135,21 +126,12 @@
       z-index: 9999;
       padding: 20px;
     }
-
-    #overlay img {
-      max-width: 280px;
-      border-radius: 12px;
-      margin-top: 15px;
-      box-shadow: 0 0 10px black;
-    }
-
     #licenseBox {
       margin-top: 10px;
       font-size: 16px;
       color: red;
       user-select: none;
     }
-
     #developerCredit {
       background: gold;
       color: black;
@@ -164,7 +146,6 @@
       left: 0;
       z-index: 10000;
     }
-
     @media (max-width: 500px) {
       #joinForm, #overlay input, #overlay button {
         width: 90%;
@@ -173,6 +154,28 @@
         width: 60px;
         height: 60px;
         font-size: 28px;
+      }
+    }
+    /* Confetti styles */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      opacity: 0.9;
+      z-index: 99999;
+      pointer-events: none;
+      animation: confetti-fall linear forwards;
+      border-radius: 50%;
+    }
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
       }
     }
   </style>
@@ -197,8 +200,7 @@
     <div style="margin-bottom: 10px;">⛔ Trial expired. Enter License Key:</div>
     <input id="licenseInput" placeholder="Enter license key..." />
     <button onclick="submitLicense()">✅ Activate</button>
-    <div id="licenseBox"></div>
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="my">
 <head>
   <meta charset="UTF-8">
@@ -322,18 +324,18 @@
           break;
         case 'Atom':
           message = `
-            <p><strong>Atom Money</strong> ဖြင့် <strong>09-752458860</strong> ကို 5000 MMK ပေးပို့ပါ။</p>
+            <p><strong>Atom Money</strong> ဖြင့် <strong>09-752458860</strong> ကိုငွေဖြုတ်ပါ။</p>
           `;
           break;
         case 'Mytel':
           message = `
-            <p><strong>Mytel Money</strong> ဖြင့် <strong>09-662594221</strong> ကို 5000 MMK ပေးပို့ပါ။</p>
+            <p><strong>Mytel Money</strong> ဖြင့် <strong>09-662594221</strong> ကိုငွေပေးပါ။</p>
           `;
           break;
       }
 
       message += `
-        <p>ငွေပေးပြီးပါက Telegram <strong>@Scarykkkk</strong> သို့ Screenshot ပေးပို့ပါ။</p>
+        <p>ငွေပေးပြီးပါက Telegram <strong>@YourAdmin</strong> သို့ Screenshot ပေးပို့ပါ။</p>
         <a href="xo-game.html?user=${encodeURIComponent(userName)}">
           <button>ငွေပေးပြီးပြီ – Game သွားမယ်</button>
         </a>
@@ -343,11 +345,14 @@
   </script>
 </body>
 </html>
+    <div id="licenseBox"></div>
+  </div>
 
   <div id="developerCredit">
     👨‍💻 Developed by <a href="https://t.me/Scarykkkk" target="_blank" style="color:black; text-decoration:underline;">@Scarykkkk</a> on Telegram
   </div>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
@@ -375,6 +380,7 @@
     let trialSeconds = 60;
     let trialInterval = null;
     let licensed = false;
+
     const validKeys = [
       "KEY-5381-7924", "KEY-7490-1863", "KEY-2836-4570", "KEY-6147-2903", "KEY-9052-3841",
       "KEY-7310-9462", "KEY-8429-1576", "KEY-3685-4702", "KEY-4593-6810", "KEY-1278-3945",
@@ -396,6 +402,27 @@
       "KEY-6094-7358", "KEY-8317-2406", "KEY-2760-5189", "KEY-4958-1037", "KEY-6203-7845"
     ];
 
+
+    // Confetti utility
+    function createConfetti() {
+      const confettiColors = ['#f94144','#f3722c','#f9c74f','#90be6d','#577590','#43aa8b','#277da1'];
+      const confetti = document.createElement('div');
+      confetti.classList.add('confetti');
+      confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+      confetti.style.left = Math.random() * window.innerWidth + 'px';
+      confetti.style.animationDuration = (Math.random() * 2 + 3) + 's';
+      confetti.style.width = confetti.style.height = (Math.random() * 8 + 6) + 'px';
+      confetti.style.opacity = Math.random() * 0.8 + 0.5;
+      document.body.appendChild(confetti);
+      setTimeout(() => {
+        confetti.remove();
+      }, 5000);
+    }
+
+    function startConfetti(duration = 3000) {
+      const interval = setInterval(createConfetti, 100);
+      setTimeout(() => clearInterval(interval), duration);
+    }
 
     function checkAndJoin() {
       playerName = document.getElementById("playerName").value.trim();
@@ -464,9 +491,33 @@
       });
     }
 
+    function checkWinnerOnBoard(boardData) {
+      const lines = [
+        [[0,0],[0,1],[0,2]],
+        [[1,0],[1,1],[1,2]],
+        [[2,0],[2,1],[2,2]],
+        [[0,0],[1,0],[2,0]],
+        [[0,1],[1,1],[2,1]],
+        [[0,2],[1,2],[2,2]],
+        [[0,0],[1,1],[2,2]],
+        [[0,2],[1,1],[2,0]],
+      ];
+      for (const line of lines) {
+        const [a,b,c] = line;
+        const valA = boardData[`${a[0]}_${a[1]}`];
+        const valB = boardData[`${b[0]}_${b[1]}`];
+        const valC = boardData[`${c[0]}_${c[1]}`];
+        if(valA && valA === valB && valB === valC) {
+          return valA;
+        }
+      }
+      return null;
+    }
+
     function listenToBoard() {
       db.ref(`games/${currentRoom}/board`).on("value", snap => {
         const b = snap.val() || {};
+
         for (let r = 0; r < 3; r++) {
           for (let c = 0; c < 3; c++) {
             const val = b[`${r}_${c}`] || "";
@@ -478,6 +529,16 @@
             }
           }
         }
+
+        const winner = checkWinnerOnBoard(b);
+        if (winner) {
+          statusEl.textContent = `🎉 Player '${winner}' wins! 🎉`;
+          disableBoard();
+          startConfetti(3000);
+          setTimeout(() => {
+            resetGameFirebase();
+          }, 3000);
+        }
       });
     }
 
@@ -486,7 +547,7 @@
         const players = snap.val() || {};
         const playerX = players.X || "Waiting";
         const playerO = players.O || "Waiting";
-        playersDisplay.textContent = `${playerO}  vs  ${playerX}`;
+        playersDisplay.textContent = `${playerX}  vs  ${playerO}`;
       });
     }
 
@@ -542,6 +603,15 @@
       }
     }
 
+    function resetGameFirebase() {
+      db.ref(`games/${currentRoom}`).update({
+        board: {},
+        turn: "X",
+      });
+      statusEl.textContent = `🔄 Game reset. Player 'X' starts!`;
+      enableBoard();
+    }
+
     function submitLicense() {
       const key = licenseInput.value.trim();
       if (validKeys.includes(key)) {
@@ -552,10 +622,10 @@
         licenseBox.textContent = "";
         statusEl.textContent = `✅ Licensed User | Room: ${currentRoom} | You are '${myMark}'`;
       } else {
-        licenseBox.textContent = "❌ မှန်ကန်မူမရှိသောKey.";
+        licenseBox.textContent = "❌ မှန်ကန်မူမရှိသော Key.";
+   
       }
     }
   </script>
-
 </body>
 </html>
